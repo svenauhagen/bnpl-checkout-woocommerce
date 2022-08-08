@@ -1,0 +1,12 @@
+### macOS ###
+.DS_Store
+
+# Log files
+*.log
+
+# Temp docker files
+/tmp/*
+!/tmp/.keep
+
+# Composer files
+/vendor/
