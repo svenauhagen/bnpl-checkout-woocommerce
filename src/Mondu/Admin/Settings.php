@@ -22,14 +22,21 @@ class Settings {
   public function init() {
     add_action('admin_menu', [$this, 'plugin_menu']);
     add_action('admin_init', [$this, 'register_options']);
+    add_action('admin_post_download_logs', [$this, 'download_mondu_logs']);
   }
 
   public function plugin_menu() {
-    add_menu_page(__('Mondu Settings', 'mondu'),
+    $mondu_icon = 'data:image/svg+xml;base64,' . base64_encode(file_get_contents(MONDU_VIEW_PATH . '/mondu.svg'));
+
+    add_menu_page(
+      __('Mondu Settings', 'mondu'),
       __('Mondu', 'mondu'),
       'manage_options',
       'mondu-settings-account',
-      [$this, 'render_account_options']);
+      [$this, 'render_account_options'],
+      $mondu_icon,
+      '55.5'
+    );
   }
 
   public function register_options() {
@@ -95,6 +102,43 @@ class Settings {
     foreach ($required_topics as $topic) {
       if (!in_array($topic, $registered_topics)) {
         $this->api->register_webhook($topic);
+      }
+    }
+  }
+
+  public function download_mondu_logs() {
+    $date = $_REQUEST['date'];
+
+    if ($date == null) {
+      status_header(400);
+      exit('Date is required');
+    }
+
+    $file = $this->get_file($date);
+
+    if ($file == null) {
+      status_header(404);
+      exit('Log not found');
+    }
+
+    $filename = 'mondu-' . $date . '.log';
+
+    header('Content-Type: text/plain');
+    header('Content-Disposition: attachment; filename="' . $filename . '";');
+
+    readfile($file);
+
+    die();
+  }
+
+  private function get_file($date) {
+    $base_dir = WP_CONTENT_DIR. '/uploads/wc-logs/';
+
+    if ($dir = opendir($base_dir)) {
+      while ($file = readdir($dir)) {
+        if (str_starts_with($file, 'mondu-' . $date) && str_ends_with($file, '.log')) {
+          return $base_dir . $file;
+        }
       }
     }
   }
