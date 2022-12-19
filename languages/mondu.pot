@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-12-19T09:44:36+00:00\n"
+"POT-Creation-Date: 2022-12-19T10:30:33+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.7.1\n"
 "X-Domain: mondu\n"
@@ -133,6 +133,12 @@ msgstr ""
 msgid "Enable this payment method"
 msgstr ""
 
+#: src/Mondu/Mondu/Gateway.php:95
+#: src/Mondu/Mondu/GatewayDirectDebit.php:90
+#: src/Mondu/Mondu/GatewayInstallment.php:89
+msgid "Error placing an order"
+msgstr ""
+
 #: src/Mondu/Mondu/GatewayDirectDebit.php:28
 #: src/Mondu/Mondu/GatewayDirectDebit.php:30
 msgid "SEPA-Lastschrift - jetzt kaufen, später bezahlen"
@@ -151,7 +157,7 @@ msgstr ""
 msgid "Mondu Ratenzahlung"
 msgstr ""
 
-#: src/Mondu/Mondu/MonduRequestWrapper.php:277
+#: src/Mondu/Mondu/MonduRequestWrapper.php:291
 msgid "Mondu: Can not create a credit note without an invoice"
 msgstr ""
 
@@ -289,6 +295,6 @@ msgstr ""
 msgid "Log date"
 msgstr ""
 
-#: views/checkout/payment-form.php:142
+#: views/checkout/payment-form.php:149
 msgid "Hinweise zur Verarbeitung Ihrer personenbezogenen Daten durch die Mondu GmbH finden Sie <a href=\"https://mondu.ai/de/datenschutzgrundverordnung-kaeufer\" target=\"_blank\">hier</a>."
 msgstr ""
