@@ -1,8 +1,8 @@
-# Copyright (C) 2022 Mondu
+# Copyright (C) 2023 Mondu
 # This file is distributed under the MIT.
 msgid ""
 msgstr ""
-"Project-Id-Version: WooCommerce-Mondu 1.0.5\n"
+"Project-Id-Version: WooCommerce-Mondu 1.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/Woocommerce-Mondu\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
