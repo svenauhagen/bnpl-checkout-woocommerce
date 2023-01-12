@@ -240,7 +240,10 @@ class PaymentInfo {
       ?>
         <p>
           <strong>
-            <?php printf(__('Your authorized net term is %s days from delivery date', 'mondu'), $order_data['authorized_net_term']); ?>.
+            <?php
+              /* translators: %s: Authorized net term */
+              printf(__('Your authorized net term is %s days from delivery date.', 'mondu'), $order_data['authorized_net_term']);
+              ?>
           </strong>
         </p>
       <?php
