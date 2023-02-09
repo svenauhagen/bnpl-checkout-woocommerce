@@ -6,6 +6,7 @@ use Mondu\Exceptions\MonduException;
 use Mondu\Exceptions\ResponseException;
 use Mondu\Mondu\MonduRequestWrapper;
 use Mondu\Mondu\Presenters\PaymentInfo;
+use Mondu\Mondu\Support\OrderData;
 use Mondu\Plugin;
 use WC_Order;
 
@@ -27,6 +28,7 @@ class Order {
 
 		add_action('wp_ajax_cancel_invoice', [ $this, 'cancel_invoice' ]);
 		add_action('wp_ajax_create_invoice', [ $this, 'create_invoice' ]);
+		add_action('wp_ajax_resend_order_data', [$this, 'resend_order_data']);
 
 		$this->mondu_request_wrapper = new MonduRequestWrapper();
 	}
@@ -110,6 +112,31 @@ class Order {
 			wp_send_json([
 				'error'   => true,
 				'message' => $e->getMessage(),
+			]);
+		}
+	}
+
+	public function resend_order_data() {
+		$is_nonce_valid = check_ajax_referer( 'mondu-create-invoice', 'security', false );
+		if ( !$is_nonce_valid ) {
+			status_header(400);
+			exit(esc_html__('Bad Request.', 'mondu'));
+		}
+
+		$order_id = isset($_POST['order_id']) ? sanitize_text_field($_POST['order_id']) : '';
+
+		$order = new WC_Order($order_id);
+		if ( null === $order ) {
+			return;
+		}
+
+		try {
+			$data_to_update = OrderData::order_data_from_wc_order_with_amount($order);
+			$this->mondu_request_wrapper->adjust_order($order_id, $data_to_update);
+		} catch (ResponseException | MonduException $e) {
+			wp_send_json([
+				'error' => true,
+				'message' => $e->get_api_message()
 			]);
 		}
 	}
