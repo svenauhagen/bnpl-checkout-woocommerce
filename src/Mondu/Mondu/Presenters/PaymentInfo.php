@@ -73,6 +73,9 @@ class PaymentInfo {
                 <button data-mondu='<?php echo(json_encode($mondu_data)) ?>' id="mondu-create-invoice-button" type="submit" class="button grant_access">
                   <?php _e('Create Invoice', 'mondu'); ?>
                 </button>
+                <button data-mondu='<?php echo(json_encode($mondu_data)) ?>' id="mondu-resend-data-button" type="submit" class="button grant_access">
+                  <?php _e('Resend Order Data', 'mondu'); ?>
+                </button>
               <?php
             }
           ?>

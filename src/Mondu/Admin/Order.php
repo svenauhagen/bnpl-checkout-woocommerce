@@ -6,6 +6,7 @@ use Mondu\Exceptions\MonduException;
 use Mondu\Exceptions\ResponseException;
 use Mondu\Mondu\MonduRequestWrapper;
 use Mondu\Mondu\Presenters\PaymentInfo;
+use Mondu\Mondu\Support\OrderData;
 use Mondu\Plugin;
 use WC_Order;
 
@@ -21,6 +22,7 @@ class Order {
 
     add_action('wp_ajax_cancel_invoice', [$this, 'cancel_invoice']);
     add_action('wp_ajax_create_invoice', [$this, 'create_invoice']);
+    add_action('wp_ajax_resend_order_data', [$this, 'resend_order_data']);
 
     $this->mondu_request_wrapper = new MonduRequestWrapper();
   }
@@ -81,6 +83,25 @@ class Order {
 
     try {
       $this->mondu_request_wrapper->ship_order($order_id);
+    } catch (ResponseException | MonduException $e) {
+      wp_send_json([
+        'error' => true,
+        'message' => $e->getMessage()
+      ]);
+    }
+  }
+
+  public function resend_order_data() {
+    $order_id = $_POST['order_id'] ?? '';
+
+    $order = new WC_Order($order_id);
+    if ($order === null) {
+      return;
+    }
+
+    try {
+      $data_to_update = OrderData::order_data_from_wc_order($order);
+      $this->mondu_request_wrapper->adjust_order($order_id, $data_to_update);
     } catch (ResponseException | MonduException $e) {
       wp_send_json([
         'error' => true,
