@@ -82,7 +82,7 @@ class Order {
 		} catch ( MonduException $e ) {
 			wp_send_json([
 				'error'   => true,
-				'message' => $e->getMessage(),
+				'message' => $e->get_api_message(),
 			]);
 		}
 	}
@@ -111,7 +111,7 @@ class Order {
 		} catch ( MonduException $e ) {
 			wp_send_json([
 				'error'   => true,
-				'message' => $e->getMessage(),
+				'message' => $e->get_api_message(),
 			]);
 		}
 	}
@@ -133,10 +133,15 @@ class Order {
 		try {
 			$data_to_update = OrderData::order_data_from_wc_order_with_amount($order);
 			$this->mondu_request_wrapper->adjust_order($order_id, $data_to_update);
-		} catch (ResponseException | MonduException $e) {
+		} catch (MonduException $e) {
 			wp_send_json([
 				'error' => true,
 				'message' => $e->get_api_message()
+			]);
+		} catch (\Exception $e) {
+			wp_send_json([
+				'error' => true,
+				'message' => $e->getMessage()
 			]);
 		}
 	}
