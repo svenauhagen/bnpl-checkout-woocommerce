@@ -15,8 +15,54 @@ class MonduRequestWrapper {
   /** @var Api */
   private $api;
 
+  /** @var api_errors */
+  private static $api_errors  = array();
+
   public function __construct() {
     $this->api = new Api();
+
+    // Error handling on admin pages
+    add_action( 'admin_notices', array( $this, 'output_errors' ) );
+    add_action( 'shutdown', array( $this, 'save_errors' ) );
+  }
+
+  /**
+   * Add an error message.
+   * @param string $text
+   */
+  public static function add_error( $text ) {
+    self::$api_errors[] = $text;
+  }
+
+  /**
+   * Save errors to an option.
+   */
+  public function save_errors() {
+    update_option( '_mondu_api_errors', self::$api_errors );
+  }
+
+  /**
+   * Show any stored error messages.
+   */
+  public function output_errors() {
+
+    if (!is_admin())
+      return;
+
+    $errors = maybe_unserialize( get_option( '_mondu_api_errors' ) );
+
+    if ( !empty( $errors ) ) {
+      echo '<div id="woocommerce_errors" class="error notice is-dismissible">';
+
+      foreach ( $errors as $error ) {
+              echo '<p> Mondu: ' . wp_kses_post( $error ) . '</p>';
+      }
+
+      echo '</div>';
+
+      // Clear
+      delete_option( '_mondu_api_errors' );
+    }
   }
 
   /**
@@ -391,6 +437,12 @@ class MonduRequestWrapper {
       return call_user_func_array(array($this->api, $action), $params);
     } catch (ResponseException $e) {
       $this->log_plugin_event($e, $action, $e->getBody());
+      if (is_admin()) {
+        $messages = $e->get_api_message();
+        foreach ($messages as $message) {
+          $this->add_error($message);
+        }
+      }
       throw $e;
     } catch (\Exception $e) {
       $this->log_plugin_event($e, $action);

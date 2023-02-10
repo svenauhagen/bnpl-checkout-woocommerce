@@ -65,7 +65,12 @@ class Order {
 
     try {
       $this->mondu_request_wrapper->cancel_invoice($mondu_order_id, $invoice_id);
-    } catch (ResponseException | MonduException $e) {
+    } catch (MonduException $e) {
+      wp_send_json([
+        'error' => true,
+        'message' => $e->get_api_message()
+      ]);
+    } catch (\Exception $e) {
       wp_send_json([
         'error' => true,
         'message' => $e->getMessage()
@@ -83,7 +88,12 @@ class Order {
 
     try {
       $this->mondu_request_wrapper->ship_order($order_id);
-    } catch (ResponseException | MonduException $e) {
+    } catch (MonduException $e) {
+      wp_send_json([
+        'error' => true,
+        'message' => $e->get_api_message()
+      ]);
+    } catch (\Exception $e) {
       wp_send_json([
         'error' => true,
         'message' => $e->getMessage()
@@ -102,7 +112,12 @@ class Order {
     try {
       $data_to_update = OrderData::order_data_from_wc_order($order);
       $this->mondu_request_wrapper->adjust_order($order_id, $data_to_update);
-    } catch (ResponseException | MonduException $e) {
+    } catch (MonduException $e) {
+      wp_send_json([
+        'error' => true,
+        'message' => $e->get_api_message()
+      ]);
+    } catch (\Exception $e) {
       wp_send_json([
         'error' => true,
         'message' => $e->getMessage()
