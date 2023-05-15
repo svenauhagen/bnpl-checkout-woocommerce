@@ -16,13 +16,6 @@ class GatewayFields {
         'label' => sprintf(__('Enable %s payment method', 'mondu'), $payment_method),
         'default' => 'no',
       ),
-      'instructions' => array(
-        'title' => __('Instructions', 'woocommerce'),
-        'type' => 'textarea',
-        'description' => __('Instructions that will be added to the thank you page and emails.', 'mondu'),
-        'default' => '',
-        'desc_tip' => true,
-      ),
     );
 
     return $fields;
