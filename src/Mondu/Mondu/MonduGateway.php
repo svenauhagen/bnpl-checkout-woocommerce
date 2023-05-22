@@ -39,6 +39,11 @@ class MonduGateway extends WC_Payment_Gateway {
 		add_action('woocommerce_update_options_payment_gateways_' . $this->id, [ $this, 'process_admin_options' ]);
 		add_action('woocommerce_thankyou_' . $this->id, [ $this, 'thankyou_page' ]);
 		add_action('woocommerce_email_before_order_table', [ $this, 'email_instructions' ], 10, 3);
+
+		// Define user set variables
+		$this->title        = $this->get_option( 'title' );
+		$this->description  = $this->get_option( 'description' );
+		$this->instructions = $this->get_option( 'instructions', $this->description );
 	}
 
 	/**
@@ -46,6 +51,36 @@ class MonduGateway extends WC_Payment_Gateway {
 	 */
 	public function init_form_fields() {
 		$this->form_fields = GatewayFields::fields($this->title);
+
+		$this->form_fields = array_merge($this->form_fields, array(
+			'enabled' => array(
+				'title' => __('Enable/Disable', 'woocommerce'),
+				'type' => 'checkbox',
+				'label' => __('Enable this payment method', 'mondu'),
+				'default' => 'no',
+			),
+			'title' => array(
+				'title'       => __( 'Title', 'woocommerce' ),
+				'type'        => 'text',
+				'description' => __( 'This controls the title which the user sees during checkout.', 'woocommerce' ),
+				'default'     => $this->title,
+				'desc_tip'    => true,
+			),
+			'description' => array(
+				'title'       => __( 'Description', 'woocommerce' ),
+				'type'        => 'textarea',
+				'description' => __( 'Payment method description that the customer will see on your checkout.', 'woocommerce' ),
+				'default'     => $this->method_description,
+				'desc_tip'    => true,
+			),
+			'instructions' => array(
+				'title'       => __( 'Instructions', 'woocommerce' ),
+				'type'        => 'textarea',
+				'description' => __( 'Instructions that will be added to the thank you page and emails.', 'woocommerce' ),
+				'default'     => '',
+				'desc_tip'    => true,
+			)
+		));
 	}
 
 	/**
