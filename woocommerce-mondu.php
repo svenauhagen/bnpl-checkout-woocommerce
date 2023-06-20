@@ -16,7 +16,9 @@
  * Copyright 2023 Mondu
  */
 
-defined('ABSPATH') or die('Direct access not allowed');
+if ( !defined('ABSPATH') ) {
+	die('Direct access not allowed');
+}
 
 define('MONDU_PLUGIN_VERSION', '1.3.2');
 define('MONDU_PLUGIN_FILE', __FILE__);
@@ -30,17 +32,17 @@ define('MONDU_PRODUCTION_URL', 'https://api.mondu.ai/api/v1');
 
 require_once 'src/autoload.php';
 
-add_action('plugins_loaded', [new \Mondu\Plugin(), 'init']);
+add_action('plugins_loaded', [ new \Mondu\Plugin(), 'init' ]);
 
 function mondu_activate() {
 }
 register_activation_hook(MONDU_PLUGIN_FILE, 'mondu_activate');
 
 function mondu_deactivate() {
-  delete_option('_mondu_credentials_validated');
-  delete_option('_mondu_webhooks_registered');
-  delete_option('woocommerce_mondu_installment_settings');
-  delete_option('woocommerce_mondu_direct_debit_settings');
-  delete_option('woocommerce_mondu_invoice_settings');
+	delete_option('_mondu_credentials_validated');
+	delete_option('_mondu_webhooks_registered');
+	delete_option('woocommerce_mondu_installment_settings');
+	delete_option('woocommerce_mondu_direct_debit_settings');
+	delete_option('woocommerce_mondu_invoice_settings');
 }
 register_deactivation_hook(MONDU_PLUGIN_FILE, 'mondu_deactivate');
