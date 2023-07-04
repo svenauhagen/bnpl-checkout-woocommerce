@@ -17,7 +17,6 @@ use WP_Error;
 use WC_Order;
 
 class Plugin {
-	const ORDER_DATA_KEY      = '_mondu_order_data';
 	const ORDER_ID_KEY        = '_mondu_order_id';
 	const INVOICE_ID_KEY      = '_mondu_invoice_id';
 	const FAILURE_REASON_KEY  = '_mondu_failure_reason';
@@ -51,11 +50,11 @@ class Plugin {
 			include_once ABSPATH . '/wp-admin/includes/plugin.php';
 
 			if ( is_multisite() ) {
-				add_action('network_admin_notices', array( $this, 'woocommerce_notice' ));
+				add_action( 'network_admin_notices', [ $this, 'woocommerce_notice' ] );
 			} else {
-				add_action('admin_notices', array( $this, 'woocommerce_notice' ));
+				add_action( 'admin_notices', [ $this, 'woocommerce_notice' ] );
 			}
-			deactivate_plugins(MONDU_PLUGIN_BASENAME);
+			deactivate_plugins( MONDU_PLUGIN_BASENAME );
 			return;
 		}
 
@@ -93,15 +92,6 @@ class Plugin {
 		add_filter('plugin_row_meta', [ $this, 'add_row_meta' ], 10, 2);
 
 		/*
-		 * Adds the mondu javascript to the list of WordPress javascripts
-		 */
-		add_action('wp_enqueue_scripts', [ $this, 'add_mondu_scripts' ]);
-		/*
-		 * Adds the mondu HTML
-		 */
-		add_action('wp_head', [ $this, 'add_mondu_html' ]);
-
-		/*
 		 * These deal with order and status changes
 		 */
 		add_action('woocommerce_order_status_changed', [ $this->mondu_request_wrapper, 'order_status_changed' ], 10, 3);
@@ -114,12 +104,6 @@ class Plugin {
 			$webhooks = new WebhooksController();
 			$webhooks->register_routes();
 		});
-
-		add_action('woocommerce_checkout_order_processed', function( $order_id ) {
-			$mondu_order_id = WC()->session->get('mondu_order_id');
-
-			update_post_meta($order_id, Plugin::ORDER_ID_KEY, $mondu_order_id);
-		}, 10, 3);
 
 		/*
 		 * Validates required fields
@@ -159,12 +143,6 @@ class Plugin {
 			return false;
 		}
 
-		// Check if we actually have a payment as well
-		$mondu_order_id = get_post_meta($order->get_id(), self::ORDER_ID_KEY, true);
-		if ( !$mondu_order_id ) {
-			return false;
-		}
-
 		return true;
 	}
 
@@ -185,22 +163,6 @@ class Plugin {
             });
         ");
 		echo '<p>' . esc_html__('Since this order will be paid via Mondu you will not be able to change the addresses.', 'mondu') . '</p>';
-	}
-
-	public function add_mondu_scripts() {
-		if ( is_checkout() ) {
-			if ( $this->is_sandbox() ) {
-				wp_enqueue_script( 'mondu', MONDU_WIDGET_SANDBOX_URL, null, '1.0.0', true );
-			} else {
-				wp_enqueue_script( 'mondu', MONDU_WIDGET_PRODUCTION_URL, null, '1.0.0', true );
-			}
-		}
-	}
-
-	public function add_mondu_html() {
-		if ( is_checkout() ) {
-			require_once MONDU_VIEW_PATH . '/checkout/mondu-checkout.html';
-		}
 	}
 
 	public function remove_mondu_outside_germany( $available_gateways ) {
@@ -232,9 +194,9 @@ class Plugin {
 	 * @return array
 	 */
 	public static function add_action_links( $links ) {
-		$action_links = array(
+		$action_links = [
 			'settings' => '<a href="' . admin_url('admin.php?page=mondu-settings-account') . '" aria-label="' . esc_attr__('View Mondu settings', 'mondu') . '">' . esc_html__('Settings', 'woocommerce') . '</a>',
-		);
+		];
 
 		return array_merge($action_links, $links);
 	}
@@ -459,18 +421,6 @@ class Plugin {
 		$message = __('Mondu requires WooCommerce to be activated.', 'mondu');
 
 		printf('<div class="%1$s"><p>%2$s</p></div>', esc_attr($class), esc_html($message));
-	}
-
-	private function is_sandbox() {
-		$sandbox_env = true;
-		if ( is_array($this->global_settings)
-			&& isset($this->global_settings['field_sandbox_or_production'])
-			&& 'production' === $this->global_settings['field_sandbox_or_production']
-		) {
-			$sandbox_env = false;
-		}
-
-		return $sandbox_env;
 	}
 
 	private function is_country_available( $country ) {
