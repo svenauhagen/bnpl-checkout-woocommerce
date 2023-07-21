@@ -155,7 +155,7 @@ class Plugin {
 
 		$payment_info = new PaymentInfo($order->get_id());
 		$order_data   = $payment_info->get_order_data();
-		if ( $order_data && 'declined' === $order_data['state'] ) {
+		if ( $order_data && ('declined' === $order_data['state'] || 'canceled' === $order_data['state']) ) {
 			return;
 		}
 
