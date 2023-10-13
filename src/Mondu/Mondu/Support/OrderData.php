@@ -60,10 +60,13 @@ class OrderData {
 			$invoice_data['shipping_info']['shipping_method'] = $order->get_shipping_method();
 		}
 
-		if ( count( $order->get_items() ) > 0 ) {
+		$order_items = $order->get_items();
+		$order_items = apply_filters('mondu_invoice_data_from_wc_order_items', $order_items);
+
+		if ( count( $order_items ) > 0 ) {
 			$invoice_data['line_items'] = [];
 
-			foreach ( $order->get_items() as $item_id => $item ) {
+			foreach ( $order_items as $item_id => $item ) {
 				$product = $item->get_product();
 
 				$line_item = [
@@ -236,7 +239,10 @@ class OrderData {
 			'line_items'           => [],
 		];
 
-		foreach ( $order->get_items() as $item_id => $item ) {
+		$order_items = $order->get_items();
+		$order_items = apply_filters('mondu_invoice_data_from_wc_order_items', $order_items);
+
+		foreach ( $order_items as $item_id => $item ) {
 			$product = $item->get_product();
 
 			$line_item = [
@@ -267,7 +273,10 @@ class OrderData {
 		$net_price_cents = 0;
 		$tax_cents       = 0;
 
-		foreach ( $order->get_items() as $item_id => $item ) {
+		$order_items = $order->get_items();
+		$order_items = apply_filters('mondu_invoice_data_from_wc_order_items', $order_items);
+
+		foreach ( $order_items as $item_id => $item ) {
 			$net_price_cents += (float) $item->get_subtotal() * 100;
 			$tax_cents       += (float) $item->get_total_tax() * 100;
 		}
